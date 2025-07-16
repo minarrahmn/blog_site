@@ -8,6 +8,7 @@ from datetime import timedelta
 
 
 app = Flask(__name__)
+CORS(app)
 
 #Configuring database
 BASE_DIR = os.path.abspath(os.path.dirname(__file__)) # defining directiory
@@ -30,7 +31,7 @@ with app.app_context():
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
-
+    
     # getting data from the user
     username = data.get('username')
     email = data.get('email')
@@ -54,9 +55,9 @@ def register():
 
     #checking if valid gender is added
 
-    if gender not in Gender.__members__:
+    if gender.lower() not in Gender.__members__:
         return jsonify({"Error":"Unrecognized gender given"}), 400
-    gender_enum = Gender[gender]
+    gender_enum = Gender[gender.lower()]
 
     hashed_pw = bcrypt.generate_password_hash(password).decode('utf-8')
 
