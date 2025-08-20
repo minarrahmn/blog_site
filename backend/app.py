@@ -118,6 +118,7 @@ def profile():
         {
             "id":user.id,
             "name": user.name,
+            "username":user.username,
             "email": user.email,
             "gender": user.gender.value if user.gender else None
         }
@@ -180,6 +181,30 @@ def get_all_posts():
             }
         )
     return jsonify({"posts":post_list}), 200
+
+@app.route('/api/user/<int:user_id>/posts', methods=['GET'])
+@jwt_required()
+def user_posts(user_id):
+    #getting user id 
+    user = User.query.get_or_404(user_id)
+
+    posts = Post.query.filter_by(user_id=user.id).order_by(Post.created_at.desc()).all()
+    user_posts = []
+
+    for post in posts:
+        user_posts.append({
+            "id": post.id,
+            "title": post.title,
+            "text": post.text,
+            "created_at": post.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "author": {
+                "id": user.id,
+                "username": user.username,
+                "name": user.name
+            }
+        })
+
+    return jsonify({"posts": user_posts}), 200
 
 @app.route('/api/posts/<int:id>', methods=['GET'])
 def get_single_post(id):

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Label from '../componenets/Label';
 import Button from '../componenets/Button';
 import Alert from '../componenets/Alert';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const Login = () => {
     'password':''
   });
   const [message, setMessage] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const {name, value} = e.target 
@@ -32,8 +34,10 @@ const Login = () => {
       })
       const data = await res.json()
       if (res.ok) {
+        localStorage.setItem("token", data.Token);
         setMessage({type:'success', text: data.success || "Login Successful" })
-        setFormData({'email': '', 'password': ''})
+        setFormData({'email': '', 'password': ''});
+        navigate('/profile');
       }
       else {
         setMessage({type:'error', text: data.error || "Wrong credentials"})
